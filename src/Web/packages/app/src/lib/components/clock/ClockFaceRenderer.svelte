@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { chartLineColor, chartLineColorMode } from "#lib/stores/appearance-store.svelte.js";
   import { browser } from "$app/env";
   import { getClockGlucoseSource } from "#lib/stores/realtime-store.svelte.js";
   import {
@@ -290,7 +291,11 @@
               <BasalTrack />
             {/if}
             <ThresholdRules />
-            <GlucoseTrack showPoints={false} />
+            <GlucoseTrack
+              showPoints={false}
+              lineColorMode={chartLineColorMode.current}
+              lineColor={chartLineColor.current}
+            />
             {#if backgroundChart.chartConfig?.showPredictions ?? false}
               <PredictionTrack />
             {/if}
@@ -357,7 +362,11 @@
                         <BasalTrack />
                       {/if}
                       <ThresholdRules />
-                      <GlucoseTrack showPoints={false} />
+                      <GlucoseTrack
+                        showPoints={false}
+                        lineColorMode={chartLineColorMode.current}
+                        lineColor={chartLineColor.current}
+                      />
                       {#if element.chartConfig?.showPredictions ?? false}
                         <PredictionTrack />
                       {/if}
