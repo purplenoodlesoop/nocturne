@@ -87,6 +87,7 @@ const pageData: HarnessProps["data"] = {
   refusedAsDemoSubject: false,
   onboardingComplete: true,
   pillRows: { desktop: 1, mobile: 1 },
+  sidebarOpen: true,
   displayPreferences: [],
   displayLanguage: "en",
   serverPreferences: null,
