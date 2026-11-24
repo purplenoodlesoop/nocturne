@@ -44,12 +44,17 @@
     findNearbyDeviceEvent,
     findActivePumpMode,
     findActiveOverride,
+    findActiveTemporaryTarget,
     findActiveProfile,
     findActiveActivities,
     findActiveTempBasal,
     findActiveBasalDelivery,
     findNearbySystemEvent,
   } = ctx.engine.finders;
+
+  /** As the Time spans page writes a target: one value, or low–high. */
+  const targetValue = (low: number, high: number) =>
+    `${high !== low ? `${bg(low, ctx.glucoseUnits)}–${bg(high, ctx.glucoseUnits)}` : bg(low, ctx.glucoseUnits)} ${bgLabel(ctx.glucoseUnits)}`;
 
   // Visibility (with defaults for when no legend is set)
   const showBolus = $derived(ctx.legend?.bolus ?? true);
@@ -77,6 +82,7 @@
     {@const activeCob = findCob(data.time)}
     {@const activePumpMode = findActivePumpMode(data.time)}
     {@const activeOverride = findActiveOverride(data.time)}
+    {@const activeTemporaryTarget = findActiveTemporaryTarget(data.time)}
     {@const activeProfile = findActiveProfile(data.time)}
     {@const activeActivities = findActiveActivities(data.time)}
     {@const activeTempBasal = findActiveTempBasal(data.time)}
@@ -224,6 +230,16 @@
           label="Pump mode"
           value={activePumpMode.state}
           color={activePumpMode.color}
+          class="font-medium"
+        />
+      {/if}
+      {#if activeTemporaryTarget}
+        <Tooltip.Item
+          label="Temporary target"
+          value={activeTemporaryTarget.reason
+            ? `${targetValue(activeTemporaryTarget.low, activeTemporaryTarget.high)} · ${activeTemporaryTarget.reason}`
+            : targetValue(activeTemporaryTarget.low, activeTemporaryTarget.high)}
+          color="var(--foreground)"
           class="font-medium"
         />
       {/if}

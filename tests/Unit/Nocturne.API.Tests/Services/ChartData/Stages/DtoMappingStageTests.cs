@@ -189,6 +189,54 @@ public class DtoMappingStageTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_TemporaryTargets_InMgdlWithoutCancelledOnes()
+    {
+        var start = DateTimeOffset.FromUnixTimeMilliseconds(StartTime).UtcDateTime;
+        StateSpan Target(string id, string state, int hour, Dictionary<string, object> metadata) => new()
+        {
+            Id = id,
+            Category = StateSpanCategory.TemporaryTarget,
+            State = state,
+            StartTimestamp = start.AddHours(hour),
+            EndTimestamp = start.AddHours(hour).AddMinutes(45),
+            Metadata = metadata,
+        };
+        var stateSpans = new Dictionary<StateSpanCategory, IEnumerable<StateSpan>>
+        {
+            [StateSpanCategory.TemporaryTarget] =
+            [
+                Target("eating-soon", "Active", 2, new()
+                {
+                    ["units"] = "mg/dl", ["targetTop"] = 72.0, ["targetBottom"] = 72.0, ["reason"] = "Eating Soon",
+                }),
+                Target("hypo", "Active", 1, new() { ["targetTop"] = 8.9, ["targetBottom"] = 8.9 }),
+                Target("cancelled", nameof(TemporaryTargetState.Cancelled), 3, new()
+                {
+                    ["targetTop"] = 90.0, ["targetBottom"] = 90.0,
+                }),
+                Target("no-bounds", "Active", 4, new()),
+            ],
+        };
+
+        var result = await _stage.ExecuteAsync(
+            new ChartDataContext { StartTime = StartTime, EndTime = EndTime, StateSpans = stateSpans },
+            CancellationToken.None);
+
+        result.TemporaryTargetSpans.Select(t => t.Id).Should().Equal("hypo", "eating-soon");
+        result.TemporaryTargetSpans[0].Low.Should().BeApproximately(160.2, 0.5);
+        result.TemporaryTargetSpans[0].High.Should().BeApproximately(160.2, 0.5);
+        result.TemporaryTargetSpans[1].Should().BeEquivalentTo(new ChartTemporaryTargetDto
+        {
+            Id = "eating-soon",
+            StartMills = StartTime + 2 * 3600_000,
+            EndMills = StartTime + 2 * 3600_000 + 45 * 60_000,
+            Low = 72,
+            High = 72,
+            Reason = "Eating Soon",
+        });
+    }
+
+    [Fact]
     public async Task ExecuteAsync_SleepSessions_MapToSleepKindNotExercise()
     {
         // Arrange

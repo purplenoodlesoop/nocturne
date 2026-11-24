@@ -91,6 +91,14 @@ export function transformChartData(data: DashboardChartData) {
     pumpModeSpans: mapSpans(data.pumpModeSpans),
     profileSpans: mapSpans(data.profileSpans),
     overrideSpans: mapSpans(data.overrideSpans),
+    temporaryTargetSpans: (data.temporaryTargetSpans ?? []).map((t) => ({
+      id: t.id ?? "",
+      startTime: new Date(t.startMills ?? 0),
+      endTime: t.endMills != null ? new Date(t.endMills) : null,
+      low: t.low ?? 0,
+      high: t.high ?? 0,
+      reason: t.reason ?? null,
+    })),
     activitySpans: mapSpans(data.activitySpans),
     tempBasalSpans: mapSpans(data.tempBasalSpans),
     basalDeliverySpans: (data.basalDeliverySpans ?? []).map((s) => ({

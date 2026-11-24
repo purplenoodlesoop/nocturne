@@ -250,7 +250,7 @@ public class DataFetchStageTests
     }
 
     [Fact]
-    public async Task ExecuteAsync_ReadsPumpModeOverrideAndTheDrawnActivityCategories()
+    public async Task ExecuteAsync_ReadsPumpModeOverrideTemporaryTargetAndTheDrawnActivityCategories()
     {
         var inputContext = new ChartDataContext
         {
@@ -263,7 +263,7 @@ public class DataFetchStageTests
 
         _mockStateSpanRepo.Verify(r => r.GetByCategories(
             It.Is<IEnumerable<StateSpanCategory>>(c => c.OrderBy(x => x).SequenceEqual(
-                new[] { StateSpanCategory.PumpMode, StateSpanCategory.Override }
+                new[] { StateSpanCategory.PumpMode, StateSpanCategory.Override, StateSpanCategory.TemporaryTarget }
                     .Concat(StateSpanCategories.DrawnActivities).OrderBy(x => x))),
             It.IsAny<DateTime?>(),
             It.IsAny<DateTime?>(),

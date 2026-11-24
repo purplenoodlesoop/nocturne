@@ -26,6 +26,7 @@
   import BasalTrack from "./tracks/BasalTrack.svelte";
   import SwimLaneTrack from "./tracks/SwimLaneTrack.svelte";
   import ThresholdRules from "./tracks/ThresholdRules.svelte";
+  import TemporaryTargetTrack from "./tracks/TemporaryTargetTrack.svelte";
   import GlucoseTrack from "./tracks/GlucoseTrack.svelte";
   import PredictionTrack from "./tracks/PredictionTrack.svelte";
   import IobCobTrack from "./tracks/IobCobTrack.svelte";
@@ -157,6 +158,7 @@
     <BasalTrack />
     <SwimLaneTrack />
     <ThresholdRules />
+    <TemporaryTargetTrack />
     <GlucoseTrack
       lineColorMode={chartLineColorMode.current}
       lineColor={chartLineColor.current}

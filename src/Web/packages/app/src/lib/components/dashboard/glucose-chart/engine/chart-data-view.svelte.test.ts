@@ -88,6 +88,28 @@ describe("createStaticChartEngine", () => {
     ]);
   });
 
+  it("clips temporary targets to the window and finds the active one", () => {
+    const engine = engineFor({
+      temporaryTargetSpans: [
+        { id: "hypo", startMills: at(-30), endMills: at(30), low: 160, high: 160 },
+        { id: "eating-soon", startMills: at(300), low: 72, high: 72, reason: "Eating Soon" },
+        { id: "gone", startMills: at(-120), endMills: at(-60), low: 90, high: 100 },
+      ],
+    });
+
+    expect(engine.displayTemporaryTargetSpans.map((t) => t.id)).toEqual(["hypo", "eating-soon"]);
+    const [hypo, eatingSoon] = engine.displayTemporaryTargetSpans;
+    expect(hypo.displayStart.getTime()).toBe(FROM);
+    expect(eatingSoon.displayEnd.getTime()).toBe(TO);
+    expect(engine.finders.findActiveTemporaryTarget(date(10))?.id).toBe("hypo");
+    expect(engine.finders.findActiveTemporaryTarget(date(100))).toBeUndefined();
+    expect(engine.finders.findActiveTemporaryTarget(date(320))).toMatchObject({
+      low: 72,
+      high: 72,
+      reason: "Eating Soon",
+    });
+  });
+
   it("finds what is active or nearby at a time", () => {
     const engine = engineFor({
       glucoseData: [0, 5, 10].map((m) => ({ time: at(m), sgv: 100 + m })),

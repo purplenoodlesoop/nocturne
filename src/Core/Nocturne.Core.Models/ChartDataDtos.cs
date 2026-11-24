@@ -78,6 +78,12 @@ public class DashboardChartData
     /// <summary>Override spans from <see cref="StateSpan"/> records with <see cref="StateSpanCategory.Override"/>.</summary>
     public List<ChartStateSpanDto> OverrideSpans { get; set; } = new();
 
+    /// <summary>
+    /// Temporary targets from <see cref="StateSpan"/> records with
+    /// <see cref="StateSpanCategory.TemporaryTarget"/>, cancelled ones left out.
+    /// </summary>
+    public List<ChartTemporaryTargetDto> TemporaryTargetSpans { get; set; } = new();
+
     /// <summary>Activity spans (exercise, illness, travel, sleep sessions) merged from state spans and sleep data.</summary>
     public List<ChartStateSpanDto> ActivitySpans { get; set; } = new();
 
@@ -288,6 +294,22 @@ public enum ChartSpanKind
     /// A span projected from a <see cref="SleepSession"/>. <see cref="ChartStateSpanDto.Category"/> is null.
     /// </summary>
     Sleep
+}
+
+/// <summary>
+/// A temporary target for chart rendering, its bounds in mg/dL whatever unit it was uploaded in.
+/// A single-value target has <see cref="Low"/> equal to <see cref="High"/>.
+/// </summary>
+public class ChartTemporaryTargetDto
+{
+    public string Id { get; set; } = "";
+    public long StartMills { get; set; }
+    public long? EndMills { get; set; }
+    public double Low { get; set; }
+    public double High { get; set; }
+
+    /// <summary>The uploader's reason, such as "Eating Soon".</summary>
+    public string? Reason { get; set; }
 }
 
 /// <summary>

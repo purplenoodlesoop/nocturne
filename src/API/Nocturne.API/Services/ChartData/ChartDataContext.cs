@@ -137,6 +137,7 @@ public sealed record ChartDataContext
     /// <summary>The stretches of the window each profile activation applies over.</summary>
     public IReadOnlyList<ResolvedProfileSegment> ProfileSegments { get; init; } = [];
     public List<ChartStateSpanDto> OverrideSpans { get; init; } = [];
+    public List<ChartTemporaryTargetDto> TemporaryTargetSpans { get; init; } = [];
     public List<ChartStateSpanDto> ActivitySpans { get; init; } = [];
     public List<ChartStateSpanDto> TempBasalSpans { get; init; } = [];
     public List<BasalDeliverySpanDto> BasalDeliverySpans { get; init; } = [];

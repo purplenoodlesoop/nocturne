@@ -196,6 +196,7 @@ internal sealed class DataFetchStage(
             [
                 StateSpanCategory.PumpMode,
                 StateSpanCategory.Override,
+                StateSpanCategory.TemporaryTarget,
                 .. StateSpanCategories.DrawnActivities,
             ];
 

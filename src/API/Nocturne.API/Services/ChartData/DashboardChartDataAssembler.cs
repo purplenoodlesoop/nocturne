@@ -31,6 +31,7 @@ internal sealed class DashboardChartDataAssembler : IChartDataAssembler
             PumpModeSpans = context.PumpModeSpans,
             ProfileSpans = context.ProfileSpans,
             OverrideSpans = context.OverrideSpans,
+            TemporaryTargetSpans = context.TemporaryTargetSpans,
             ActivitySpans = context.ActivitySpans,
             TempBasalSpans = context.TempBasalSpans,
             BasalDeliverySpans = context.BasalDeliverySpans,

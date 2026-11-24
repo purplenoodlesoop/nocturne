@@ -12,6 +12,7 @@ const no_context_finders: SeriesFinders = {
   findNearbyDeviceEvent: () => undefined,
   findActivePumpMode: () => undefined,
   findActiveOverride: () => undefined,
+  findActiveTemporaryTarget: () => undefined,
   findActiveProfile: () => undefined,
   findActiveActivities: () => [],
   findActiveTempBasal: () => undefined,

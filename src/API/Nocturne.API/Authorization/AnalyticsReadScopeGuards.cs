@@ -73,6 +73,7 @@ internal static class ChartDataReadScopeGuard
             data.CarbMarkers = [];
             data.BasalInjectionMarkers = [];
             data.OverrideSpans = [];
+            data.TemporaryTargetSpans = [];
             data.TempBasalSpans = [];
             data.BasalDeliverySpans = [];
             data.DefaultBasalRate = 0;

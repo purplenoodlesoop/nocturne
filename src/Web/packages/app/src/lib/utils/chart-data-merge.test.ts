@@ -31,6 +31,7 @@ function chartData(
     pumpModeSpans: [],
     profileSpans: [],
     overrideSpans: [],
+    temporaryTargetSpans: [],
     activitySpans: [],
     tempBasalSpans: [],
     basalDeliverySpans: [],

@@ -129,6 +129,13 @@ export interface DisplayProfileSpan extends DisplaySpan {
   profileName: string;
 }
 
+/** A temporary target with display-clipped start/end times; bounds in mg/dL */
+export type DisplayTemporaryTargetSpan =
+  TransformedChartData["temporaryTargetSpans"][number] & {
+    displayStart: Date;
+    displayEnd: Date;
+  };
+
 /** A temp basal span with extracted rate/percent */
 export interface DisplayTempBasalSpan extends DisplaySpan {
   rate: number | null;
@@ -190,6 +197,7 @@ export interface SeriesFinders {
   findNearbyDeviceEvent: (time: Date) => DeviceEventMarkerData | undefined;
   findActivePumpMode: (time: Date) => DisplaySpan | undefined;
   findActiveOverride: (time: Date) => DisplaySpan | undefined;
+  findActiveTemporaryTarget: (time: Date) => DisplayTemporaryTargetSpan | undefined;
   findActiveProfile: (time: Date) => DisplayProfileSpan | undefined;
   findActiveActivities: (time: Date) => DisplaySpan[];
   findActiveTempBasal: (time: Date) => DisplayTempBasalSpan | undefined;
@@ -254,6 +262,7 @@ export interface ChartDataEngine {
   // State spans (processed / display-clipped)
   readonly displayPumpModeSpans: DisplaySpan[];
   readonly displayOverrideSpans: DisplaySpan[];
+  readonly displayTemporaryTargetSpans: DisplayTemporaryTargetSpan[];
   readonly displayProfileSpans: DisplayProfileSpan[];
   readonly displayActivitySpans: DisplaySpan[];
   readonly displayTempBasalSpans: DisplayTempBasalSpan[];
@@ -390,6 +399,9 @@ export function createChartDataView(
   // ---- State spans ----
   const pumpModeSpans = $derived(serverChartData?.pumpModeSpans ?? []);
   const overrideSpans = $derived(serverChartData?.overrideSpans ?? []);
+  const temporaryTargetSpans = $derived(
+    serverChartData?.temporaryTargetSpans ?? []
+  );
   const profileSpans = $derived(serverChartData?.profileSpans ?? []);
   const activitySpans = $derived(serverChartData?.activitySpans ?? []);
   const tempBasalSpans = $derived(serverChartData?.tempBasalSpans ?? []);
@@ -406,6 +418,12 @@ export function createChartDataView(
     const pumpMode = processSpans(pumpModeSpans, rangeStart, rangeEnd);
 
     const override = processSpans(overrideSpans, rangeStart, rangeEnd);
+
+    const temporaryTarget = processSpans(
+      temporaryTargetSpans,
+      rangeStart,
+      rangeEnd
+    );
 
     const profile = processSpans(profileSpans, rangeStart, rangeEnd).map(
       (span) => ({
@@ -441,6 +459,7 @@ export function createChartDataView(
     return {
       pumpMode,
       override,
+      temporaryTarget,
       profile,
       activity,
       tempBasal,
@@ -451,6 +470,9 @@ export function createChartDataView(
 
   const displayPumpModeSpans = $derived(processedStateSpans.pumpMode);
   const displayOverrideSpans = $derived(processedStateSpans.override);
+  const displayTemporaryTargetSpans = $derived(
+    processedStateSpans.temporaryTarget
+  );
   const displayProfileSpans = $derived(processedStateSpans.profile);
   const displayActivitySpans = $derived(processedStateSpans.activity);
   const displayTempBasalSpans = $derived(processedStateSpans.tempBasal);
@@ -587,6 +609,8 @@ export function createChartDataView(
     findActiveSpan(displayPumpModeSpans, time, false);
   const findActiveOverride = (time: Date) =>
     findActiveSpan(displayOverrideSpans, time, false);
+  const findActiveTemporaryTarget = (time: Date) =>
+    findActiveSpan(displayTemporaryTargetSpans, time, false);
   const findActiveProfile = (time: Date) =>
     findActiveSpan(displayProfileSpans, time, false);
   const findActiveActivities = (time: Date) =>
@@ -625,6 +649,7 @@ export function createChartDataView(
     findNearbyDeviceEvent,
     findActivePumpMode,
     findActiveOverride,
+    findActiveTemporaryTarget,
     findActiveProfile,
     findActiveActivities,
     findActiveTempBasal,
@@ -724,6 +749,9 @@ export function createChartDataView(
     },
     get displayOverrideSpans() {
       return displayOverrideSpans;
+    },
+    get displayTemporaryTargetSpans() {
+      return displayTemporaryTargetSpans;
     },
     get displayProfileSpans() {
       return displayProfileSpans;

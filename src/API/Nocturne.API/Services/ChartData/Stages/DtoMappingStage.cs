@@ -1,5 +1,6 @@
 using Nocturne.API.Helpers;
 using Nocturne.API.Services.Analytics;
+using Nocturne.Core.Clinical.Schedules;
 using Nocturne.Core.Contracts.Treatments;
 using Nocturne.Core.Contracts.Profiles.Resolvers;
 using Nocturne.Core.Models;
@@ -50,6 +51,9 @@ internal sealed class DtoMappingStage(ITreatmentFoodService treatmentFoodService
         var profileSpans = MapProfileSegments(context.ProfileSegments);
         var overrideSpans = context.StateSpans.TryGetValue(StateSpanCategory.Override, out var overrideRaw)
             ? MapStateSpans(overrideRaw, StateSpanCategory.Override)
+            : [];
+        var temporaryTargetSpans = context.StateSpans.TryGetValue(StateSpanCategory.TemporaryTarget, out var temporaryTargetRaw)
+            ? MapTemporaryTargets(temporaryTargetRaw)
             : [];
 
         var activitySpans = StateSpanCategories.DrawnActivities
@@ -104,6 +108,7 @@ internal sealed class DtoMappingStage(ITreatmentFoodService treatmentFoodService
             PumpModeSpans = pumpModeSpans,
             ProfileSpans = profileSpans,
             OverrideSpans = overrideSpans,
+            TemporaryTargetSpans = temporaryTargetSpans,
             ActivitySpans = activitySpans,
             BasalDeliverySpans = basalDeliverySpans,
             LastPumpSyncMills = lastPumpSyncMills,
@@ -135,6 +140,36 @@ internal sealed class DtoMappingStage(ITreatmentFoodService treatmentFoodService
                 Metadata = span.Metadata,
             })
             .ToList();
+    }
+
+    /// <summary>
+    /// Reads each target's bounds into mg/dL as the profile timeline does
+    /// (<see cref="TemporaryTargetUnits.ToMgdl"/>); a target with one bound uses it for both.
+    /// </summary>
+    private static List<ChartTemporaryTargetDto> MapTemporaryTargets(IEnumerable<StateSpan> spans)
+    {
+        var targets = new List<ChartTemporaryTargetDto>();
+        foreach (var span in spans
+            .Where(s => s.State != nameof(TemporaryTargetState.Cancelled))
+            .OrderBy(s => s.StartMills))
+        {
+            var (top, bottom) = TemporaryTargetUnits.ToMgdl(
+                (double?)span.Metadata.TryReadDecimal("targetTop"),
+                (double?)span.Metadata.TryReadDecimal("targetBottom"),
+                span.Metadata.TryReadString("units"));
+            if ((bottom ?? top, top ?? bottom) is (double low, double high))
+                targets.Add(new ChartTemporaryTargetDto
+                {
+                    Id = span.Id ?? "",
+                    StartMills = span.StartMills,
+                    EndMills = span.EndMills,
+                    Low = low,
+                    High = high,
+                    Reason = span.Metadata.TryReadString("reason"),
+                });
+        }
+
+        return targets;
     }
 
     /// <remarks>

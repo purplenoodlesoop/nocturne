@@ -129,6 +129,7 @@ export function mergeChartData(
 		pumpModeSpans: mergeSpansById(initial.pumpModeSpans, historical.pumpModeSpans),
 		profileSpans: mergeSpansById(initial.profileSpans, historical.profileSpans),
 		overrideSpans: mergeSpansById(initial.overrideSpans, historical.overrideSpans),
+		temporaryTargetSpans: mergeSpansById(initial.temporaryTargetSpans, historical.temporaryTargetSpans),
 		activitySpans: mergeSpansById(initial.activitySpans, historical.activitySpans),
 		tempBasalSpans: mergeSpansById(initial.tempBasalSpans, historical.tempBasalSpans),
 		basalDeliverySpans: mergeSpansById(
@@ -277,6 +278,7 @@ export function replaceWindow(
 		pumpModeSpans: swapSpans(current.pumpModeSpans, recent.pumpModeSpans),
 		profileSpans: swapSpans(current.profileSpans, recent.profileSpans),
 		overrideSpans: swapSpans(current.overrideSpans, recent.overrideSpans),
+		temporaryTargetSpans: swapSpans(current.temporaryTargetSpans, recent.temporaryTargetSpans),
 		activitySpans: swapSpans(current.activitySpans, recent.activitySpans),
 		tempBasalSpans: swapSpans(current.tempBasalSpans, recent.tempBasalSpans),
 		basalDeliverySpans: swapSpans(current.basalDeliverySpans, recent.basalDeliverySpans),
