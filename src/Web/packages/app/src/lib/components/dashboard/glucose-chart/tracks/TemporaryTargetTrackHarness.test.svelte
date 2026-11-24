@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Chart, Svg } from "layerchart";
+  import { Chart, Rule, Svg } from "layerchart";
   import { scaleTime } from "d3-scale";
   import TemporaryTargetTrack from "./TemporaryTargetTrack.svelte";
   import {
@@ -14,9 +14,11 @@
     spans: DisplayTemporaryTargetSpan[];
     from: Date;
     to: Date;
+    /** Draws a glucose rule at this mg/dL the way ThresholdRule does. */
+    ruleAt?: number;
   }
 
-  let { spans, from, to }: Props = $props();
+  let { spans, from, to, ruleAt }: Props = $props();
 
   const height = 300;
   const glucoseYMax = 400;
@@ -58,6 +60,11 @@
   >
     <Svg>
       <TemporaryTargetTrack />
+      {#if ruleAt != null}
+        <g data-testid="reference-rule">
+          <Rule y={layout.glucose.scale(ruleAt)} />
+        </g>
+      {/if}
     </Svg>
   </Chart>
 </div>

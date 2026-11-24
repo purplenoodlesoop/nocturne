@@ -62,6 +62,23 @@ describe("TemporaryTargetTrack", () => {
     expect(band.getAttribute("class")).toContain("stroke-foreground");
   });
 
+  it("draws a higher target higher, at the same height as a glucose rule", async () => {
+    const { container } = render(Harness, {
+      from,
+      to,
+      spans: [span("low", 0, 30, 72, 72), span("high", 30, 60, 200, 200)],
+      ruleAt: 200,
+    });
+
+    const [low, high] = bands(container).map((b) => b.getBBox().y);
+    expect(high).toBeLessThan(low);
+    const rule = container.querySelector<SVGLineElement>(
+      '[data-testid="reference-rule"] line'
+    );
+    expect(rule).not.toBeNull();
+    expect(high).toBeCloseTo(rule!.getBBox().y, 0);
+  });
+
   it("draws nothing without temporary targets", async () => {
     const { container } = render(Harness, { from, to, spans: [] });
     expect(bands(container)).toHaveLength(0);
